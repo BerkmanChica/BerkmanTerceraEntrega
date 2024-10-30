@@ -1,60 +1,51 @@
-
-import HomePage from "./Pages/HomePage"
-import DetailsPage from './Pages/DetailsPage'
-import About from './Pages/About'
-import Layout from "./layouts/layout"
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import Humans from "./Pages/Humans"
-import Aliens from "./Pages/Aliens"
-import { useEffect, useState } from "react"
+import HomePage from "./Pages/HomePage";
+import DetailsPage from './Pages/DetailsPage';
+import About from './Pages/About';
+import Layout from "./layouts/Layout";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function App() {
-
   const [data, setData] = useState([]);
-  const [err, setErr] = useState(null)
-  const url = 'https://rickandmortyapi.com/api/character/  '
+  const [err, setErr] = useState(null);
+  const url = 'https://dattebayo-api.onrender.com/characters';
+
   async function fetching(url) {
     try {
-      const response = await fetch(url)
+      const response = await fetch(url);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error('Network response was not ok');
       }
       const info = await response.json();
-      setData(info.results)
+      setData(info.characters); // Asegúrate de que `info.characters` sea la estructura correcta
     } catch (error) {
-      console.log(`error de tipo ${error}`);
-      console.log();
-
+      console.error(`Error: ${error}`);
+      setErr(error.message);
     }
   }
 
   useEffect(() => {
-    fetching(url)
-  }, [])
-
+    fetching(url);
+  }, []);
 
   return (
     <BrowserRouter>
       {
-
         err ? (
-          null) :
+          <div>Error: {err}</div> // Mostrar error en la UI
+        ) : (
           <Routes>
-
-            <Route element={<Layout></Layout>}>
-
+            <Route element={<Layout />}>
               <Route path="/about" element={<About />} />
               <Route path="/" element={<HomePage data={data} />} />
-              <Route path="/humans" element={<Humans data={data.filter(item => item.species === "Human")} />} />
-              <Route path="/aliens" element={<Aliens data={data.filter(item => item.species === "Alien")} />} />
-
+              <Route path="/homepage" element={<HomePage data={data} />} />
+              <Route path="/character/:id" element={<DetailsPage data={data} />} />
             </Route>
           </Routes>
+        )
       }
-
-
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

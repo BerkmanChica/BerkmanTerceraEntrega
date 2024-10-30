@@ -1,70 +1,112 @@
-import { useState } from "react";
+import React, { useState } from 'react';
+import { FaUsers, FaHandSparkles, FaLeaf } from 'react-icons/fa'; // Asegúrate de instalar react-icons
 
-// eslint-disable-next-line react/prop-types
-export default function Character({ name, status, species, gender, image, id, location, origin }) {
-    const [isModalOpen, setIsModalOpen] = useState(false);
+const Character = ({ character }) => {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    const toggleModal = () => {
-        setIsModalOpen(!isModalOpen);
+    const handlePrevImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + character.images.length) % character.images.length);
+    };
+
+    const handleNextImage = () => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % character.images.length);
     };
 
     return (
-        <>
-            {/* Card Layout */}
-            <article
-                key={id}
-                className="relative flex flex-col items-center gap-3 bg-gradient-to-b from-blue-800 to-blue-500 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-500 transform hover:scale-102 cursor-pointer p-4" // Ajustes realizados aquí
-                onClick={toggleModal}
-            >
-                <div className="w-48 h-48 overflow-hidden rounded-full shadow-md">
-                    <img
-                        className="object-cover w-full h-full"
-                        src={image}
-                        alt={`${name}`}
+        <div className="character-details p-6 bg-white rounded-lg shadow-lg transition-transform duration-300 hover:shadow-2xl max-w-lg mx-auto">
+            <h1 className="text-4xl font-bold text-orange-600 text-center mb-4">{character.name}</h1>
+            
+            {/* Carrusel de imágenes */}
+            <div className="images relative mb-6 overflow-hidden rounded-lg">
+                {character.images.length > 0 ? (
+                    <img 
+                        src={character.images[currentImageIndex]} 
+                        alt={`${character.name} image`} 
+                        className="w-full h-auto transition-transform duration-500 ease-in-out transform hover:scale-105" 
                     />
-                </div>
-                <h2 className="text-2xl font-bold text-white">{name}</h2>
-                <p className="text-white">{species} - {gender}</p>
-                <p className={`text-white font-semibold ${status === 'Dead' ? 'text-red-500' : status === 'Alive' ? 'text-green-400' : 'text-gray-300'}`}>
-                    {status}
-                </p>
-            </article>
-
-            {/* Modal Layout */}
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-                    <div className="relative bg-white rounded-lg p-8 w-11/12 md:w-2/3 lg:w-1/2 shadow-xl transform transition-all duration-300">
-                        <button
-                            onClick={toggleModal}
-                            className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-3xl font-bold"
+                ) : (
+                    <img 
+                        src="default-image-url.jpg" 
+                        alt="Imagen predeterminada" 
+                        className="w-full h-auto rounded-lg shadow-lg" 
+                    />
+                )}
+                {character.images.length > 1 && (
+                    <>
+                        <button 
+                            onClick={handlePrevImage} 
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-orange-600 text-white p-2 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
                         >
-                            &times;
+                            &#10094;
                         </button>
-                        <div className="flex flex-col md:flex-row gap-6 items-center">
-                            <img
-                                src={image}
-                                alt={name}
-                                className="rounded-lg w-48 h-48 object-cover md:w-64 md:h-64 shadow-lg"
-                            />
-                            <div className="flex flex-col space-y-4 text-gray-800">
-                                <h2 className="text-4xl font-black">{name}</h2>
-                                <p className="text-lg">{species} - {gender}</p>
-                                <p className={`text-xl font-bold ${status === 'Dead' ? 'text-red-600' : status === 'Alive' ? 'text-green-500' : 'text-gray-500'}`}>
-                                    {status}
-                                </p>
-                                <div>
-                                    <h3 className="text-lg font-semibold">Last known location:</h3>
-                                    <p>{location}</p>
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold">First seen in:</h3>
-                                    <p>{origin}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
+                        <button 
+                            onClick={handleNextImage} 
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-orange-600 text-white p-2 rounded-full shadow-lg hover:bg-orange-500 transition duration-300"
+                        >
+                            &#10095;
+                        </button>
+                    </>
+                )}
+            </div>
+            
+            {/* Sección de Debut */}
+            <div className="bg-gray-100 p-4 rounded-lg shadow mb-4">
+                <h2 className="text-3xl font-bold text-orange-600 mb-2 flex items-center">
+                    <FaHandSparkles className="mr-2" /> Debut
+                </h2>
+                <ul className="list-disc list-inside">
+                    {Object.entries(character.debut).map(([key, value]) => (
+                        <li key={key}>
+                            <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span> {value}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            
+            {/* Sección de Familia */}
+            <div className="bg-gray-100 p-4 rounded-lg shadow mb-4">
+                <h2 className="text-3xl font-bold text-orange-600 mb-2 flex items-center">
+                    <FaUsers className="mr-2" /> Familia
+                </h2>
+                console.log(character.sex);
+                
+                
+                <ul className="list-disc list-inside">
+                    {Object.entries(character.family).map(([relation, name]) => (
+                        <li key={relation}>
+                            <span className="font-semibold">{relation.charAt(0).toUpperCase() + relation.slice(1)}:</span> {name}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            
+            {/* Sección de Jutsu */}
+            <div className="bg-gray-100 p-4 rounded-lg shadow mb-4">
+                <h2 className="text-3xl font-bold text-orange-600 mb-2 flex items-center">
+                    <FaHandSparkles className="mr-2" /> Jutsu
+                </h2>
+                <ul className="list-disc list-inside">
+                    {character.jutsu.map((jutsu, index) => (
+                        <li key={index}>{jutsu}</li>
+                    ))}
+                </ul>
+            </div>
+            
+            {/* Sección de Tipo de Naturaleza */}
+            <div className="bg-gray-100 p-4 rounded-lg shadow mb-4">
+                <h2 className="text-3xl font-bold text-orange-600 mb-2 flex items-center">
+                    <FaLeaf className="mr-2" /> Tipo de Naturaleza
+                </h2>
+                <ul className="list-disc list-inside">
+                    {character.natureType.map((type, index) => (
+                        <li key={index}>{type}</li>
+                    ))}
+                </ul>
+            </div>
+
+            {/* Agrega más secciones según sea necesario */}
+        </div>
     );
-}
+};
+
+export default Character;
